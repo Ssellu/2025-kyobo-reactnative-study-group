@@ -4,4 +4,4 @@ relative_links:
   enabled: true
   collections: true
 include:
-  - Day01-00-오리엔테이션.md
+  - README.md
