@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, Button, StyleSheet } from "react-native";
-import useCounter from "../hooks/03Ex05UseCounterCustomHook";
-import useUserStatus from "../hooks/03Ex06UseUserStatusCustomHook";
+import useCounter from "../hooks/04Ex05UseCounterCustomHook";
+import useUserStatus from "../hooks/04Ex06UseUserStatusCustomHook";
 
 export default function Ex06Dashboard({ user }) {
   const { count, increment } = useCounter(0);
