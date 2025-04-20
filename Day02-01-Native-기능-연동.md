@@ -13,7 +13,6 @@ React Native에서 카메라를 사용하려면 `react-native-vision-camera` 또
 #### 설치 및 설정:
 ```bash
 npm install react-native-vision-camera
-cd ios && pod install
 ```
 
 #### iOS 설정: (XCode 빌드)
@@ -61,28 +60,11 @@ Expo 프레임워크는 위 독립적인 플랫폼 권한 관리를 한꺼번에
 
 #### 카메라 퍼미션 요청 및 사용 예제:
 
-### React-Native를 expo 라이브러리 설치 및 프로젝트 생성
+##### 추가 expo 라이브러리 설치
 ```bash
-npm install -g expo-cli
-npx create-expo-app 02_react_native_basics --template blank 
-cd 02_react_native_basics
-npx expo install react-dom react-native-web @expo/metro-runtime @expo/config
-```
-### 프로젝트 실행하기 
-```bash
-npm start  # react 실행과 동일
-w # Press w │ open web (웹 환경으로 열기)
-```
-
-### 브라우저 접속
-URL: exp://172.168.10.67:8081
-
-### 카메라 및 마이크 사용을 위한 라이브러리 설치 
-```bash
+npx expo install @expo/config expo-camera
 npm install react-native-vision-camera
 ```
-
-
 
 ### Component 추가
 ```jsx
@@ -368,6 +350,7 @@ const styles = StyleSheet.create({
 });
 
 ```
+
 #### 위치 정보 확인하여 카카오맵과 네이버맵 연동 예제:
 ```jsx
 import React, { useState, useEffect } from 'react';
