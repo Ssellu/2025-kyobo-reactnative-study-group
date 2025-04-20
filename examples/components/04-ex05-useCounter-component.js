@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, Button, StyleSheet } from "react-native";
-import useCounter from "../hooks/04Ex05UseCounterCustomHook";
+import useCounter from "../hooks/04-ex05-useCounter-custom-hook";
 
 export default function Ex05Counter() {
   const { count, increment, decrement, reset } = useCounter(0);
