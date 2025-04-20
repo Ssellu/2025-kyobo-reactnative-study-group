@@ -14,7 +14,7 @@ React에서 `fetch`와 `Axios`를 활용하여 외부 API를 호출하고, 실�
 import React, { useState, useEffect } from "react";
 import { View, Text, FlatList, ActivityIndicator, StyleSheet } from "react-native";
 
-const FetchExample = () => {
+export default App = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -84,8 +84,6 @@ const styles = StyleSheet.create({
   },
 });
 
-export default FetchExample;
-
 ```
 
 ### **주요 학습 포인트**
@@ -111,7 +109,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, FlatList, ActivityIndicator, StyleSheet } from "react-native";
 import axios from "axios";
 
-const AxiosExample = () => {
+export default App = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -175,9 +173,6 @@ const styles = StyleSheet.create({
     borderBottomColor: "#eee",
   },
 });
-
-export default AxiosExample;
-
 ```
 ### **Axios와 Fetch의 차이점**
 - **Axios**: JSON 자동 변환, HTTP 에러 자동 처리, 요청 취소 등 편의 기능이 많아 복잡한 프로젝트에 유리함.
