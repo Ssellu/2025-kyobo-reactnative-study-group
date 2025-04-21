@@ -157,36 +157,7 @@ npx expo start
 
 ---
 
-**4. 예제 코드 작성**
-
-`App.js` 또는 `App.tsx` 파일에 다음과 같이 작성해보세요.
-
-```javascript
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-
-export default function App() {
-  return (
-    
-      안녕하세요, Expo와 React Native!
-    
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
-```
-이 코드를 저장하면, 연결된 기기에서 바로 변경사항이 반영되어 확인할 수 있습니다.
-
----
-
-**5. 로컬 기기에 네이티브 앱 빌드 & 실행 (선택사항, 고급)**
+**4. 로컬 기기에 네이티브 앱 빌드 & 실행 (선택사항, 고급)**
 
 Expo Go가 아닌, 직접 빌드한 네이티브 앱을 설치하고 싶다면 다음 명령어를 사용합니다.
 
@@ -206,7 +177,7 @@ Expo Go가 아닌, 직접 빌드한 네이티브 앱을 설치하고 싶다면 �
 
 ---
 
-**6. 실제 앱 스토어 배포용 빌드 (EAS Build)**
+**5. 앱 스토어 배포용 빌드 (EAS Build)**
 
 앱을 실제로 배포하고 싶다면 Expo의 EAS(Build) 서비스를 사용합니다.
 
@@ -215,29 +186,41 @@ npx expo install eas-cli
 npx eas build -p android
 npx eas build -p ios
 ```
-이 명령어로 클라우드에서 앱을 빌드하고, APK(안드로이드) 또는 IPA(iOS) 파일을 받아서 스토어에 업로드할 수 있습니다.
+
+- iOS의 경우 Apple Developer Program 가입 필요 ($99/년) 
+- 빌드는 Expo의 클라우드 서버에서 진행
+- 빌드 완료 후 .ipa 파일을 다운로드 받아 App Store Connect에 업로드 가능
 
 ---
+### 1. Expo Android 빌드
+### 2. Expo iOS 빌드 
+- Apple Developer 계정 필요 
+#### 1. `App.json` 에서 `bundleIdentifier` 항목 확인
+  ```json
+  {
+    "build": {
+      "production": {
+        "ios": {
+          "bundleIdentifier": "com.ssellu.MyProject"
+        }
+      }
+    }
+  }
+  ```
+#### 2. Apple Developer Console에서 Bundle ID 등록
 
-#### 요약
+- [Apple Developer Console](https://developer.apple.com/account/resources/identifiers/list) 접속
+- `Identifiers` > `+` 버튼 클릭
+- `App IDs` 선택
+- Bundle ID: "com.ssellu.MyProject" 입력
 
-| 목적                | 방법/명령어                      | 비고                            |
-|---------------------|----------------------------------|---------------------------------|
-| Expo 프로젝트 생성  | `npx create-expo-app 프로젝트명`  |                                |
-| 개발 서버 실행      | `npx expo start`                 | QR코드로 실기기 연결           |
-| 안드로이드 빌드/실행| `npx expo run:android`           | 네이티브 모듈 개발 시           |
-| iOS 빌드/실행       | `npx expo run:ios`               | Mac, Xcode 필요                |
-| 앱 배포용 빌드      | `npx eas build -p android/ios`   | EAS 계정 필요, 클라우드 빌드    |
 
----
-
-#### 실제 적용 예시
-
-1. 프로젝트 생성 및 실행
-    ```bash
-    npx create-expo-app@latest MyApp
-    cd MyApp
-    npx expo start
-    ```
-2. Expo Go 앱에서 QR코드 스캔 → 실기기에서 앱 확인
-3. 코드 수정 → 실시간 반영 확인
+#### 4. 빌드 재시도
+```bash
+eas build --platform ios
+```
+#### 주의 사항 
+- Apple Developer Program 가입이 필요합니다.
+- Bundle ID는 고유해야 합니다.
+- Apple Developer Console의 인증서와 프로비저닝 프로파일이 유효해야 합니다.
+  

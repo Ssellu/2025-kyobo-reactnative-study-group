@@ -7,7 +7,7 @@
 | Native 기능 구현             | 1h   | <a href="Day02-01-Native-기능-연동.md" target="_blank">- 카메라, 마이크, 위치 정보 등 React Native에서 제공하는 디바이스 기능 접근 방식<br> - 퍼미션(permission) 처리 흐름 이해: NFC 및 센서 데이터 연동에 대한 개념적 접근</a>                                                                                             |
 | 앱 성능 최적화               | 1h   | <a href="Day02-10-앱-성능-최적화.md" target="_blank">- `useMemo`, `useCallback`을 통한 성능 최적화와 함수 캐싱 기법<br> - 불필요한 렌더링 방지와 리소스 관리 전략<br> - 상태 업데이트 방식(`useState` vs `useReducer`) 비교 및 선택 기준 설명</a><br><a href="Day02-11-좋아요-기능-예제.md" target="_blank">- '좋아요' 기능 구현을 통한 최적화 실습</a>                                                                                 |
 | 배포 가이드                  | 1h   | <a href="Day02-21-React-Native-빌드-및-배포하기.md" target="_blank">- React Native 앱의 빌드 및 배포 절차 이해 (`npm run build`, serve, `/build` 폴더)<br> - 로컬 테스트용 빌드 vs 배포용 빌드 차이 이해<br> - 프로젝트 구조 분석: `/public/index.html`, `/src/App.js` 등 파일 구조 설명<br> - Expo 프레임워크를 활용한 앱 빌드 실습</a>                                                   |
-| To-do 앱 심화과정            | 3h   | - CRUD 기능이 포함된 To-do 리스트 앱 완성<br> - 사용자 입력 관리: `useState`, `useRef`를 활용한 입력폼 구성<br> - 리스트 렌더링 / 조건부 렌더링<br> - 컴포넌트 분리 및 props 전달 방식 (`props.children` 포함)<br> **사전 앱 환경 설정 준비 필요** |
+| To-do 앱 심화과정            | 3h   | <a href="Day03-01-To-Do-List-심화.md" target="_blank">- CRUD 기능이 포함된 To-do 리스트 앱 완성<br> - 사용자 입력 관리: `useState`, `useRef`를 활용한 입력폼 구성<br> - 리스트 렌더링 / 조건부 렌더링<br> - 컴포넌트 분리 및 props 전달 방식 (`props.children` 포함)<br> **사전 앱 환경 설정 준비 필요**</a> |
 
 # 🚀준비물
 1. 노트북 
