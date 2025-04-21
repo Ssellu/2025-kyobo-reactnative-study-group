@@ -1,4 +1,4 @@
-# 🎨 React의 Container와 Component
+# 🎨 RN의 Container와 Component
 React Native도 React와 마찬가지로 **Container**와 **Component**를 구분짓고 있습니다.
 **Container**와 **Component**는 역할에 따라 구분되는 컴포넌트 패턴입니다.     
 이들은 관심사의 분리(Separation of Concerns)를 통해 코드의 가독성과 유지보수성을 높이는 데 도움을 줍니다.
