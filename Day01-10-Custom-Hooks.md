@@ -1,6 +1,180 @@
 # **🚀 커스텀 Hook 제작: useCounter와 useUserStatus**
 
-React에서 커스텀 Hook은 재사용 가능한 상태 관리 로직을 추출하여 컴포넌트 간 중복을 줄이고 코드의 가독성을 높이는 데 유용합니다.   
+React Native에서 커스텀 Hook은, React의 기본 Hook을 조합하여 재사용 가능한 로직을 캡슐화한 함수이며, 이는  **공통 로직의 재사용**, **컴포넌트 코드의 간결화**, **유지보수성 향상**을 위해 반드시 활용해야 하는 강력한 도구입니다.          
+특히 폼 관리, API 통신, 네트워크 상태, 타이머 등 **여러 컴포넌트에서 반복되는 로직**이 있다면 커스텀 Hook으로 분리하는 것이 모범 사례입니다.     
+**Custom Hook**을 만들 때는 몇 가지 규칙을 따라야 합니다.     
+다음은 Custom Hook을 만들 때의 주요 규칙입니다:
+
+---
+
+### 1. **이름은 반드시 `use`로 시작해야 합니다**
+- React는 Hook을 식별하기 위해 함수 이름이 `use`로 시작해야 한다고 요구합니다.
+- 예: `useFetch`, `useTimer`, `useCounter` 등.
+
+```javascript
+function useCustomHook() {
+  // Hook 로직
+}
+```
+
+---
+
+### 2. **React Hook을 내부에서 호출해야 합니다**
+- Custom Hook은 React의 기본 Hook(`useState`, `useEffect`, `useCallback` 등)을 내부에서 호출하여 동작합니다.
+- 일반 함수처럼 동작하지 않고, React의 Hook 규칙을 따릅니다.
+
+```javascript
+import { useState, useEffect } from 'react';
+
+function useCustomHook() {
+  const [state, setState] = useState(0);
+
+  useEffect(() => {
+    console.log('Custom Hook 실행');
+  }, []);
+
+  return [state, setState];
+}
+```
+
+---
+
+### 3. **Hook 규칙을 따라야 합니다**
+Custom Hook도 React의 **Hook 규칙**을 따라야 합니다:
+- **최상위에서만 호출**: 반복문, 조건문, 중첩된 함수 안에서 호출하면 안 됩니다.
+- **React 함수 내에서만 호출**: Custom Hook은 React 함수형 컴포넌트나 다른 Custom Hook에서만 호출할 수 있습니다.
+
+```javascript
+// 올바른 예
+function useCustomHook() {
+  const [state, setState] = useState(0);
+  return [state, setState];
+}
+
+// 잘못된 예
+function useCustomHook() {
+  if (true) {
+    const [state, setState] = useState(0); // 조건문 안에서 호출하면 안 됨
+  }
+}
+```
+
+---
+
+### 4. **재사용 가능한 로직을 캡슐화**
+- Custom Hook은 특정 컴포넌트에 종속되지 않고, 여러 컴포넌트에서 재사용할 수 있는 로직을 캡슐화해야 합니다.
+- 예를 들어, API 호출, 타이머 관리, 폼 상태 관리 등을 Custom Hook으로 추출할 수 있습니다.
+
+```javascript
+import { useState, useEffect } from 'react';
+
+function useFetch(url) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        setData(data);
+        setLoading(false);
+      });
+  }, [url]);
+
+  return { data, loading };
+}
+```
+
+---
+
+### 5. **필요한 값을 반환**
+- Custom Hook은 상태, 함수, 또는 필요한 값을 반환해야 합니다.
+- 반환값은 배열이나 객체로 구성할 수 있습니다.
+
+```javascript
+function useCounter(initialValue = 0) {
+  const [count, setCount] = useState(initialValue);
+
+  const increment = () => setCount(count + 1);
+  const decrement = () => setCount(count - 1);
+
+  return { count, increment, decrement };
+}
+```
+
+---
+
+### 6. **의존성 배열 관리**
+- Custom Hook 내부에서 사용하는 `useEffect`, `useCallback` 등은 의존성 배열을 정확히 관리해야 합니다.
+- 의존성 배열을 잘못 관리하면 예상치 못한 동작이나 성능 문제가 발생할 수 있습니다.
+
+```javascript
+function useCustomHook(dependency) {
+  useEffect(() => {
+    console.log('Dependency changed:', dependency);
+  }, [dependency]); // 의존성 배열에 dependency 추가
+}
+```
+
+---
+
+### 예제: Custom Hook 만들기
+#### 1. **타이머 관리 Hook**
+```javascript
+import { useState, useEffect, useRef } from 'react';
+
+function useTimer() {
+  const [time, setTime] = useState(0);
+  const timerRef = useRef(null);
+
+  const startTimer = () => {
+    if (!timerRef.current) {
+      timerRef.current = setInterval(() => {
+        setTime(prevTime => prevTime + 1);
+      }, 1000);
+    }
+  };
+
+  const stopTimer = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  };
+
+  const resetTimer = () => {
+    stopTimer();
+    setTime(0);
+  };
+
+  useEffect(() => {
+    return () => stopTimer(); // 컴포넌트 언마운트 시 타이머 정리
+  }, []);
+
+  return { time, startTimer, stopTimer, resetTimer };
+}
+```
+
+#### 2. **사용 예시**
+```javascript
+import React from 'react';
+import { View, Text, Button } from 'react-native';
+import useTimer from './useTimer';
+
+export default function TimerApp() {
+  const { time, startTimer, stopTimer, resetTimer } = useTimer();
+
+  return (
+    <View>
+      <Text>Time: {time} seconds</Text>
+      <Button title="Start" onPress={startTimer} />
+      <Button title="Stop" onPress={stopTimer} />
+      <Button title="Reset" onPress={resetTimer} />
+    </View>
+  );
+}
+```
+---
 `useCounter`와 `useUserStatus` 커스텀 Hook을 구현하고 실제 컴포넌트에 적용해봅시다.
 
 ---
@@ -291,7 +465,14 @@ React Native에서 커스텀 Hook은 **반복되는 로직을 재사용**하고,
 
 ---
 
-### 결론
 
-React Native에서 커스텀 Hook은 **공통 로직의 재사용**, **컴포넌트 코드의 간결화**, **유지보수성 향상**을 위해 반드시 활용해야 하는 강력한 도구입니다.  
-특히 폼 관리, API 통신, 네트워크 상태, 타이머 등 **여러 컴포넌트에서 반복되는 로직**이 있다면 커스텀 Hook으로 분리하는 것이 모범 사례입니다.
+---
+
+### 요약
+Custom Hook을 만들 때는 다음 규칙을 기억하세요:
+1. 이름은 반드시 `use`로 시작.
+2. React Hook을 내부에서 호출.
+3. Hook 규칙(최상위 호출, React 함수 내 호출)을 준수.
+4. 재사용 가능한 로직을 캡슐화.
+5. 필요한 값을 반환.
+6. 의존성 배열을 정확히 관리.

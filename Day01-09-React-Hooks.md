@@ -286,7 +286,7 @@ React Native에서 **useRef**는 컴포넌트 참조뿐 아니라, 렌더링과 
   ```
   - 의존성 배열(`[]`)을 통해 특정 값이 변경될 때만 실행되도록 설정할 수 있습니다.
   - `return`을 사용하여 cleanup 함수를 정의하면 컴포넌트가 언마운트될 때 실행됩니다.
-  - 
+
 **useEffect 동작 원리 이해하기**  
 React의 `useEffect` 와 관련 컴포넌트 생명주기
 ---
@@ -431,40 +431,78 @@ useEffect(() => {
 
   ```
 - **useCallback**: 
-  - `useCallback`은 첫 번째 인자로 `함수`를 받고, 두 번째 인자로 의존성 배열(`[]`)을 받습니다
-  - 의존성 배열이 변경되지 않으면 기존 함수를 재사용하여 성능 최적화를 제공합니다.
-  ```jsx
-  import React, { useState, useCallback } from 'react';
-  import { View, Text, Button, StyleSheet } from 'react-native';
+  - `seCallback`은 React에서 제공하는 Hook으로, **함수의 메모이제이션(Memoization)**을 통해 불필요한 함수 재생성을 방지하고 성능을 최적화하는 데 사용됩니다.
+  - `useCallback`은 첫 번째 인자로 `함수`를 받고, 두 번째 인자로 의존성 배열(`[]`)을 받습니다.
+  - 주요 특징:
+    - 함수 재사용: useCallback은 의존성 배열이 변경되지 않는 한 동일한 함수 객체를 반환합니다.
+    - 성능 최적화: 자식 컴포넌트에 함수를 props로 전달할 때, 불필요한 리렌더링을 방지합니다.
+    - 의존성 배열: 함수가 참조하는 값(상태, props 등)을 의존성 배열에 명시해야 합니다.
+    ```jsx
+    import React, { useState, useCallback } from 'react';
+    import { View, Text, Button, StyleSheet } from 'react-native';
 
-  export default function Ex03Counter() {
-      console.log('useCallback - App component re-rendered');
+    export default function Ex03Counter() {
+        console.log('useCallback - App component re-rendered');
+        const [count, setCount] = useState(0);
+
+        const increment = useCallback(() => {
+            setCount(prevCount => prevCount + 1);
+        }, []); // increment 함수는 컴포넌트가 리렌더링되더라도 동일한 함수 객체를 유지
+
+        return (
+            <View style={styles.container}>
+            <Text style={styles.text}>Count: {count}</Text>
+            <Button title="Increment" onPress={increment} />
+            </View>
+        );
+    }
+
+    const styles = StyleSheet.create({
+        container: {
+            alignItems: 'center',
+            marginTop: 40,
+        },
+        text: {
+            fontSize: 24,
+            marginBottom: 16,
+        },
+    });
+
+    ```
+  - useCallback은 자식 컴포넌트에 props로 함수를 전달할 때 유용합니다. 함수가 매번 새로 생성되면 자식 컴포넌트가 불필요하게 리렌더링될 수 있기 때문입니다.
+    ```jsx
+    import React, { useState, useCallback } from 'react';
+    import { Button, Text, View } from 'react-native';
+
+    const Child = React.memo(({ onClick }) => {
+      console.log('Child rendered');
+      return <Button title="Click Me" onPress={onClick} />;
+      // React.memo로 감싼 Child 컴포넌트는 onClick 함수가 변경되지 않는 한 리렌더링되지 않는다.
+    });
+
+    export default function Parent() {
       const [count, setCount] = useState(0);
 
-      const increment = useCallback(() => {
-          setCount(prevCount => prevCount + 1);
-      }, []);
+      const handleClick = useCallback(() => {
+        console.log('Button clicked');
+      }, []); // 빈 배열: handleClick은 항상 동일한 함수 객체를 유지
 
       return (
-          <View style={styles.container}>
-          <Text style={styles.text}>Count: {count}</Text>
-          <Button title="Increment" onPress={increment} />
-          </View>
+        <View>
+          <Text>Count: {count}</Text>
+          <Button title="Increment" onPress={() => setCount(count + 1)} />
+          <Child onClick={handleClick} />
+        </View>
       );
-  }
-
-  const styles = StyleSheet.create({
-      container: {
-          alignItems: 'center',
-          marginTop: 40,
-      },
-      text: {
-          fontSize: 24,
-          marginBottom: 16,
-      },
-  });
-
-  ```
+    }
+    ```
+  - 주의사항
+    1. 의존성 배열 관리:
+        - 의존성 배열에 포함된 값이 변경되면 함수가 새로 생성됩니다.
+        - 의존성을 정확히 관리하지 않으면 의도치 않은 동작이나 성능 문제가 발생할 수 있습니다.
+    2. 불필요한 사용 피하기:
+        - 모든 함수에 useCallback을 사용하는 것은 오히려 성능을 저하시킬 수 있습니다.
+        - 함수가 자식 컴포넌트에 props로 전달되거나, 리렌더링 비용이 높은 경우에만 사용하세요.
 ---
 
 ### **6. 기타 Hooks**

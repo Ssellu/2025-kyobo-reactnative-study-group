@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { View, FlatList, Button, Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function TodoListScreen({ navigation }) {
   const [todos, setTodos] = useState([]);
@@ -9,12 +10,11 @@ export default function TodoListScreen({ navigation }) {
   };
 
   return (
-    <View style={{ flex: 1, padding: 20 }}>
+    <SafeAreaView style={{ flex: 1, padding: 20 }}>
       <Button 
         title="할일 추가" 
         onPress={() => navigation.navigate('AddTodo', { addTodo })} 
       />
-      
       <FlatList
         data={todos}
         keyExtractor={(item) => item.id.toString()}
@@ -24,6 +24,6 @@ export default function TodoListScreen({ navigation }) {
           </Text>
         )}
       />
-    </View>
+    </SafeAreaView>
   );
 }

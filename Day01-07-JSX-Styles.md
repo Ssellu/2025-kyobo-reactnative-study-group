@@ -22,7 +22,7 @@ React Native도 React와 동일하게 JSX를 사용합니다. 하지만 **HTML �
 
 - **React Fragment**: 여러 요소를 감쌀 때 불필요한 뷰 계층을 만들고 싶지 않다면 Fragment를 사용할 수 있습니다.
   1. 명시적 사용:
-     ```jsx
+    ```jsx
     import React from 'react';
 
     function App() {
@@ -33,9 +33,9 @@ React Native도 React와 동일하게 JSX를 사용합니다. 하지만 **HTML �
         </React.Fragment>
       );
     }
-     ```
+    ```
   2. 축약형 사용:
-     ```jsx
+    ```jsx
     function App() {
       return (
         <>
@@ -44,7 +44,7 @@ React Native도 React와 동일하게 JSX를 사용합니다. 하지만 **HTML �
         </>
       );
     }
-     ```
+    ```
 
 ---
 

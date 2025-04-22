@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { View, TextInput, Button } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function AddTodoScreen({ route, navigation }) {
   const [text, setText] = useState('');
@@ -13,7 +14,7 @@ export default function AddTodoScreen({ route, navigation }) {
   };
 
   return (
-    <View style={{ padding: 20 }}>
+    <SafeAreaView style={{ flex: 1, padding: 20 }}>
       <TextInput
         placeholder="할일 입력"
         value={text}
@@ -25,6 +26,6 @@ export default function AddTodoScreen({ route, navigation }) {
         }}
       />
       <Button title="추가" onPress={handleSubmit} />
-    </View>
+    </SafeAreaView>
   );
 }
