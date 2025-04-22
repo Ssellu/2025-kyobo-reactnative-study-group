@@ -1,6 +1,4 @@
-# React Native 디바이스 기능 접근 및 퍼미션 처리 강의 자료
-
-## 강의 목표
+# React Native 디바이스 기능 접근 및 퍼미션 처리
 React Native에서 카메라, 마이크, 위치 정보, NFC 등 디바이스 기능을 접근하고, 퍼미션(permission)을 처리하는 방법을 학습합니다. 이를 통해 사용자 데이터 보호와 앱 기능의 원활한 구현을 실현합니다.
 
 ---
@@ -490,49 +488,6 @@ const styles = StyleSheet.create({
 });
 
 ```
-웹 환경에서 위치 정보는 여러 가지 기준과 기술을 조합하여 결정됩니다. 대표적으로 아래와 같은 방식이 사용됩니다.
-
----
-
-#### 1. **브라우저 Geolocation API**
-
-- **가장 정확한 위치 정보**는 사용자가 브라우저의 위치 권한을 허용했을 때,  
-  브라우저가 기기의 GPS, Wi-Fi, 블루투스, 셀룰러(기지국) 정보 등을 활용해 제공합니다.
-- 사용자가 위치 권한을 허용하면,  
-  스마트폰은 GPS와 Wi-Fi, 데스크탑은 Wi-Fi 또는 유선 네트워크 정보를 조합해 위치를 추정합니다.
-- 이 방식은 사용자의 동의가 필요하며,  
-  동의하지 않으면 더 부정확한 방식(IP 기반 등)으로 대체됩니다.
-
----
-
-#### 2. **IP 주소 기반 위치 추정**
-
-- 사용자가 위치 권한을 거부하거나,  
-  Geolocation API를 사용하지 않는 경우에는  
-  **IP 주소**를 기반으로 대략적인 위치(도시, 지역 수준)를 추정합니다.
-- 이 방식은 정확도가 낮고,  
-  VPN, 프록시, 모바일 데이터 등 네트워크 환경에 따라 실제 위치와 다를 수 있습니다.
----
-
-#### 3. **기타 보조 정보**
-
-- 일부 서비스는 사용자가 직접 입력한 위치 정보(예: 주소, 우편번호)를 활용하기도 합니다.
-- 엣지 컴퓨팅(가장 가까운 서버에서 처리)이나  
-  Wi-Fi AP 정보, 블루투스 비콘 등 다양한 기술이 보조적으로 사용될 수 있습니다.
-
----
-
-#### 4. **정리**
-
-- **가장 정확:**  
-  사용자가 위치 권한을 허용한 경우,  
-  브라우저가 기기의 GPS/Wi-Fi/셀룰러 정보를 조합해 위치를 결정
-- **중간 정확:**  
-  위치 권한 거부 시, IP 주소 기반으로 대략적인 위치 추정
-- **보조:**  
-  사용자가 직접 입력한 정보, 네트워크 인프라 정보 등
-
----
 
 ## 2. 퍼미션 처리 흐름 이해
 
@@ -612,4 +567,125 @@ const redirectToSettings = () => {
 };
 ```
 
+## 5. Native 기능 관련 주요 권한 목록
+React Native 앱에서 네이티브 기능(카메라, 위치, 마이크 등)을 사용하려면 사용자에게 권한을 요청해야 합니다. 
+
+| 권한 종류                | 설명                                | Android 권한 키                              | iOS 권한 키                                 |
+|-------------------------|-------------------------------------|---------------------------------------------|---------------------------------------------|
+| Camera                  | 카메라 사용                         | CAMERA                                      | NSCameraUsageDescription                    |
+| Microphone              | 마이크 사용                         | RECORD_AUDIO                                | NSMicrophoneUsageDescription                |
+| PhotoLibrary            | 사진첩 접근                         | READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE| NSPhotoLibraryUsageDescription              |
+| Contacts                | 연락처 접근                         | READ_CONTACTS                               | NSContactsUsageDescription                  |
+| Calendars               | 캘린더 접근                         | READ_CALENDAR, WRITE_CALENDAR               | NSCalendarsUsageDescription                 |
+| LocationAlways          | 항상 위치 정보 사용                 | ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION | NSLocationAlwaysUsageDescription            |
+| LocationWhenInUse       | 앱 사용 중 위치 정보 사용           | ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION | NSLocationWhenInUseUsageDescription         |
+| Bluetooth               | 블루투스 사용                      | BLUETOOTH, BLUETOOTH_ADMIN                  | NSBluetoothAlwaysUsageDescription           |
+| Motion                  | 모션 센서 사용                      | BODY_SENSORS                                | NSMotionUsageDescription                    |
+| Notifications           | 푸시 알림                           | POST_NOTIFICATIONS, VIBRATE                 | (별도 키 없음, Info.plist에서 설정)         |
+| AppTrackingTransparency | 앱 추적 투명성                      | (해당 없음)                                 | NSUserTrackingUsageDescription              |
+| FaceID                  | Face ID 사용                        | (해당 없음)                                 | NSFaceIDUsageDescription                    |
+| SpeechRecognition       | 음성 인식                           | RECORD_AUDIO                                | NSSpeechRecognitionUsageDescription         |
+| Reminders               | 리마인더 접근                       | READ_REMINDERS, WRITE_REMINDERS             | NSRemindersUsageDescription                 |
+| Siri                    | Siri 사용                           | (해당 없음)                                 | NSSiriUsageDescription                      |
+| MediaLibrary            | 미디어 라이브러리 접근              | READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE| NSAppleMusicUsageDescription, NSPhotoLibraryUsageDescription |
+
+---
+
+## 실제 적용 예제
+
+### 1. react-native-permissions 설치
+
+```bash
+yarn add react-native-permissions
+# 또는
+npm install --save react-native-permissions
+```
+Podfile에 필요한 권한 모듈 추가 후, iOS는 pod install 필수.
+
+### 2. AndroidManifest.xml에 권한 추가
+
+```xml
+<uses-permission android:name="android.permission.CAMERA" />
+<uses-permission android:name="android.permission.RECORD_AUDIO" />
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+```
+![alt text](images/02-01-01.png)
+
+
+### 3. Info.plist에 iOS 권한 메시지 추가
+
+```xml
+<key>NSCameraUsageDescription</key>
+<string>카메라 사용을 위해 권한이 필요합니다.</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>마이크 사용을 위해 권한이 필요합니다.</string>
+<key>NSPhotoLibraryUsageDescription</key>
+<string>사진첩 접근을 위해 권한이 필요합니다.</string>
+```
+
+### 4. 권한 요청 코드 예시
+
+```javascript
+import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
+
+// 카메라 권한 요청 (플랫폼별 분기)
+const requestCameraPermission = async () => {
+  const result = await request(
+    Platform.OS === 'ios'
+      ? PERMISSIONS.IOS.CAMERA
+      : PERMISSIONS.ANDROID.CAMERA
+  );
+  if (result === RESULTS.GRANTED) {
+    // 권한 허용됨: 카메라 기능 사용
+  } else {
+    // 권한 거부됨: 안내 메시지 또는 설정 이동
+  }
+};
+```
+
+### 5. 여러 권한 동시 요청 예시
+
+```javascript
+import { requestMultiple, PERMISSIONS } from 'react-native-permissions';
+
+const permissions = Platform.select({
+  ios: [
+    PERMISSIONS.IOS.CAMERA,
+    PERMISSIONS.IOS.MICROPHONE,
+    PERMISSIONS.IOS.PHOTO_LIBRARY,
+  ],
+  android: [
+    PERMISSIONS.ANDROID.CAMERA,
+    PERMISSIONS.ANDROID.RECORD_AUDIO,
+    PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE,
+  ],
+});
+
+const requestAllPermissions = async () => {
+  const statuses = await requestMultiple(permissions);
+  // statuses 객체에서 각 권한의 상태 확인 가능
+};
+```
+
+---
+
+## 권한 상태 값
+
+- **RESULTS.UNAVAILABLE**: 사용 불가
+- **RESULTS.DENIED**: 거부됨(요청 가능)
+- **RESULTS.GRANTED**: 허용됨
+- **RESULTS.LIMITED**: 제한적 허용(iOS)
+- **RESULTS.BLOCKED**: 완전 거부(설정에서 직접 변경 필요)
+
+---
+
+## 참고 사항
+
+- Android 13 이상에서는 알림 권한(POST_NOTIFICATIONS)이 별도로 필요합니다.
+- iOS는 각 권한에 대해 Info.plist에 설명 메시지를 반드시 추가해야 심사 통과 및 정상 동작이 가능합니다.
+- 권한 요청 타이밍(앱 실행 시, 기능 진입 시 등)은 UX에 따라 다르게 설계할 수 있습니다.
+
+---
 

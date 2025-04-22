@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View, Image, Platform } from 'react-native';
-import { Camera } from 'expo-camera';
+import { CameraView, Camera } from 'expo-camera';
 
 export default function App() {
   const [hasPermission, setHasPermission] = useState(null);
@@ -41,12 +41,53 @@ export default function App() {
   };
 
   const toggleCameraType = () => {
+    console.log('카메라 전환   :', type);
     setType(prev => {
       if (Platform.OS === 'web') {
         return prev === 'user' ? 'environment' : 'user';
       }
       return prev === 'back' ? 'front' : 'back';
     });
+  };
+
+  const renderCamera = () => {
+    if (Platform.OS === 'web') {
+      return (
+        <video
+          ref={cameraRef}
+          style={styles.camera}
+          autoPlay
+          playsInline
+          muted
+        >
+          <track kind="captions" />
+        </video>
+      );
+    }
+
+    return (
+      <CameraView 
+        style={styles.camera} 
+        facing={type}
+        ref={cameraRef}
+        useCamera2Api={false}
+      >
+        <View style={styles.controls}>
+          <TouchableOpacity
+            style={styles.controlButton}
+            onPress={toggleCameraType}
+          >
+            <Text style={styles.buttonText}>전환</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.controlButton, styles.captureButton]}
+            onPress={takePicture}
+          >
+            <Text style={styles.buttonText}>촬영</Text>
+          </TouchableOpacity>
+        </View>
+      </CameraView>
+    );
   };
 
   // 권한 상태에 따른 UI 처리
@@ -79,29 +120,7 @@ export default function App() {
           <Image source={{ uri: photo }} style={styles.previewImage} />
           <Button title="다시 찍기" onPress={() => setPhoto(null)} />
         </View>
-      ) : (
-        <Camera 
-          style={styles.camera} 
-          type={type}
-          ref={cameraRef}
-          useCamera2Api={false} // Android에서 더 나은 호환성
-        >
-          <View style={styles.controls}>
-            <TouchableOpacity
-              style={styles.controlButton}
-              onPress={toggleCameraType}
-            >
-              <Text style={styles.buttonText}>전환</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.controlButton, styles.captureButton]}
-              onPress={takePicture}
-            >
-              <Text style={styles.buttonText}>촬영</Text>
-            </TouchableOpacity>
-          </View>
-        </Camera>
-      )}
+      ) : renderCamera()}
     </View>
   );
 }
@@ -156,3 +175,4 @@ const styles = StyleSheet.create({
     lineHeight: 28,
   },
 });
+
