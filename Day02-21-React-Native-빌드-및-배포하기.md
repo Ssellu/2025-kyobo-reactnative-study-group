@@ -192,14 +192,150 @@ Expo Go가 아닌, 직접 빌드한 네이티브 앱을 설치하고 싶다면 �
 - **앱 크기** 제한
 - **특정 코드푸시** 구현 제한
 
----
 
-**5. 앱 스토어 배포용 빌드 (EAS Build)**
+# Expo Standalone 파일 빌드
+## EAS CLI 설치 
+```bash
+npm install -g eas-cli
+```
 
-앱을 실제로 배포하고 싶다면 Expo의 EAS(Build) 서비스를 사용합니다.
+## EAS CLI 명령
+
+### 1. `eas login`
+- **목적**: Expo 계정으로 EAS CLI 인증
+- **사용 시점**: 
+  - EAS CLI를 처음 사용할 때
+  - 다른 Expo 계정으로 전환할 때
 
 ```bash
-npx expo install eas-cli
+# 기본 로그인
+eas login
+
+# 특정 계정으로 로그인
+eas login -u username@example.com
+
+# 현재 로그인 상태 확인
+eas whoami
+```
+
+### 2. `eas build:configure`
+- **목적**: 프로젝트의 EAS Build 설정 초기화
+- **사용 시점**:
+  - 프로젝트에서 처음 EAS Build를 사용할 때
+  - 빌드 설정을 처음부터 다시 구성할 때
+
+```bash
+# 기본 설정
+eas build:configure
+
+# 특정 플랫폼만 설정
+eas build:configure --platform ios
+eas build:configure --platform android
+```
+
+#### 생성되는 파일
+`eas build:configure` 실행 시 생성되는 `eas.json`:
+
+````json
+{
+  "cli": {
+    "version": ">= 5.9.1"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {
+      "autoIncrement": true
+    }
+  }
+}
+````
+
+#### 주의사항
+- Expo 계정이 필요합니다
+- `eas login` 후에 `eas build:configure` 실행
+- 프로젝트 루트 디렉토리에서 실행해야 함
+- Android/iOS 빌드 설정이 자동으로 구성됨
+
+### 1. `eas device:create`
+- **목적**: iOS 기기를 개발자 계정에 등록하고 프로비저닝 프로파일을 생성
+- **사용 시점**: 
+  - 새로운 iOS 기기에서 개발용 앱을 테스트하려 할 때
+  - 내부 테스터에게 개발 빌드를 배포하려 할 때
+
+```bash
+# 기본 사용법
+eas device:create
+
+# 특정 플랫폼 지정
+eas device:create --platform ios
+```
+
+### 2. `eas build:resign`
+- **목적**: 기존 iOS/Android 앱 바이너리에 새로운 인증서로 서명
+- **사용 시점**:
+  - 인증서가 만료되었을 때
+  - 다른 개발자 계정으로 앱을 배포해야 할 때
+  - 기존 앱을 다른 번들 ID로 재배포해야 할 때
+
+```bash
+# 기본 사용법
+eas build:resign --path /path/to/app.ipa --profile production
+
+# Android APK 재서명
+eas build:resign --platform android --path /path/to/app.apk
+```
+
+#### 주의사항
+- `device:create`는 Apple Developer Program 계정이 필요
+- `build:resign`은 원본 앱 파일(.ipa/.apk)이 필요
+- iOS의 경우 유효한 프로비저닝 프로파일과 인증서가 필요
+- 
+**빌드 종류**
+```bash
+# eas device:create  # iOS 기기를 개발자 계정에 등록하고 프로비저닝 프로파일을 생성
+# eas build:resign  # 기존 iOS/Android 앱 바이너리에 새로운 인증서로 서명
+
+#내부 빌드 프로필로
+# preview 구성으로 android,ios 플랫폼에 대한 빌드 생성
+eas build --profile preview --platform all
+
+# preview 구성으로 ios 플랫폼에 대한 빌드 생성
+eas build --profile preview --platform ios
+
+# preview 구성으로 android 플랫폼에 대한 빌드 생성
+eas build --profile preview --platform android
+
+#Store용 빌드
+eas build --platform android
+
+eas build --platform ios
+
+eas build --platform all 
+
+#development 모드
+eas build --profile development --platform ios
+
+eas build --profile development --platform android
+
+#시뮬레이터용 develpment 모드
+eas build --profile development-simulator --platform ios
+
+eas build --profile development-simulator --platform android
+
+#xcode로 시뮬레이터 빌드
+npx react-native run-ios
+```
+
+
+**앱 스토어 배포용 빌드 (EAS Build)**
+
+```bash
 npx eas build -p android
 npx eas build -p ios
 ```
@@ -240,4 +376,68 @@ eas build --platform ios
 - Apple Developer Program 가입이 필요합니다.
 - Bundle ID는 고유해야 합니다.
 - Apple Developer Console의 인증서와 프로비저닝 프로파일이 유효해야 합니다.
-  
+---  
+# .ipa/.apk/.aab 디바이스 설치하기 (Standalone 방식)
+
+### 1. iOS에 `.ipa` 설치하기
+
+#### **1.1 EAS로 .ipa 빌드**
+- EAS(Build)를 사용하여 iOS용 `.ipa` 파일을 생성합니다.
+- 빌드 명령:
+  ```bash
+  eas build --preview --platform ios
+  ```
+- 빌드 완료 후, Expo에서 제공하는 링크를 통해 `.ipa` 파일을 다운로드합니다.
+
+#### **1.2 .ipa 파일 업로드**
+- `.ipa` 파일을 디바이스에 설치하려면 HTTPS를 지원하는 파일 공유 서비스를 사용해야 합니다. 예를 들어:
+  - [Diawi](https://www.diawi.com/): 간단한 업로드 및 설치 링크 제공.
+  - [InstallOnAir](https://www.installonair.com/): QR 코드 생성 및 설치 지원.
+
+#### **1.3 디바이스에 설치**
+1. 업로드된 `.ipa` 파일의 링크를 iOS 디바이스에서 엽니다.
+2. 설치를 진행하면 "신뢰할 수 없는 개발자" 경고가 표시될 수 있습니다.
+3. **설정 → 일반 → 기기 관리**로 이동하여 해당 프로파일을 신뢰하도록 설정합니다.
+4. 앱을 실행하여 테스트합니다.
+
+#### **주의사항**
+- **Apple Developer Program 가입 필요**: iOS 디바이스에 앱을 설치하려면 Apple Developer 계정이 필요합니다.
+- **UDID 등록**: 테스트할 디바이스의 UDID를 Apple Developer 계정에 등록해야 합니다.
+- **프로비저닝 프로파일**: 올바른 프로비저닝 프로파일이 설정되어 있어야 합니다.
+- **HTTPS 필수**: iOS는 HTTPS를 통해서만 `.ipa` 파일을 다운로드 및 설치할 수 있습니다.
+
+---
+
+### 2. Android에 `.apk` 혹은 `.aab` 설치하기
+
+#### **2.1 Android Studio 활용**
+1. **APK 빌드**:
+   - Android Studio에서 프로젝트를 열고, **Build → Build Bundle(s)/APK(s) → Build APK(s)**를 선택합니다.
+   - 빌드가 완료되면 `app/build/outputs/apk/release/` 디렉토리에서 `.apk` 파일을 찾을 수 있습니다.
+
+2. **디바이스 연결**:
+   - Android 디바이스를 USB로 연결하고, **개발자 옵션**에서 **USB 디버깅**을 활성화합니다.
+
+3. **APK 설치**:
+   - Android Studio의 **Device File Explorer**를 사용하거나, 명령어를 통해 설치:
+     ```bash
+     adb install /path/to/app-release.apk
+     ```
+4. **AAB 설치**:
+   - `.aab` 파일은 Google Play Store를 통해 배포되거나, `bundletool`을 사용하여 APK로 변환 후 설치해야 합니다.
+   - APK 변환 명령:
+     ```bash
+     bundletool build-apks --bundle=/path/to/app-release.aab --output=/path/to/output.apks --mode=universal
+     ```
+   - 변환된 APK 설치:
+     ```bash
+     adb install /path/to/output.apks
+     ```
+
+
+
+#### **주의사항**
+- **디바이스 설정**: Android 디바이스에서 **알 수 없는 소스에서 앱 설치 허용** 옵션을 활성화해야 합니다.
+- **ADB 설치**: ADB(Android Debug Bridge)가 설치되어 있어야 합니다. [ADB 설치 가이드](https://developer.android.com/studio/command-line/adb)를 참고하세요.
+- **AAB 파일**: `.aab` 파일은 APK로 변환하지 않으면 직접 설치할 수 없습니다.
+- **디버그 vs 릴리스 빌드**: 디버그 빌드는 개발용으로만 사용하며, 릴리스 빌드는 서명된 상태여야 배포 가능합니다.

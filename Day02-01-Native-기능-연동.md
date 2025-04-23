@@ -689,3 +689,11 @@ const requestAllPermissions = async () => {
 
 ---
 
+
+## 실습
+- StackNavigator를 활용하여 위 예제 2가지(카메라, 위치)를 하나의 앱에 합쳐봅시다.
+- Screen0 : 버튼 2개가 있는 화면 (메인 화면, title: Main)
+  - 버튼1. 카메라 화면으로 이동 (title: Camera)
+  - 버튼2. 위치 화면으로 이동 (title: Location)
+- Screen1 : 카메라 화면
+- Screen2 : 위치 화면
